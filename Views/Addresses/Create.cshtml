@@ -1,0 +1,114 @@
+﻿@model Temp.Models.Address
+
+@{
+    ViewData["Title"] = "Create";
+}
+
+<h1>Create</h1>
+
+<h4>Address</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="form-group">
+                <label asp-for="StoreName" class="control-label"></label>
+                <input asp-for="StoreName" class="form-control" />
+                <span asp-validation-for="StoreName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoreAddress" class="control-label"></label>
+                <input asp-for="StoreAddress" class="form-control" />
+                <span asp-validation-for="StoreAddress" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StorePincode" class="control-label"></label>
+                <input asp-for="StorePincode" class="form-control" onchange="fetchAddress()" id="StorePincode" />
+                <span asp-validation-for="StorePincode" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoreCity" class="control-label"></label>
+                <input asp-for="StoreCity" class="form-control" id="StoreCity" />
+                <span asp-validation-for="StoreCity" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoreState" class="control-label"></label>
+                <input asp-for="StoreState" class="form-control" id="StoreState" />
+                <span asp-validation-for="StoreState" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoreCountry" class="control-label"></label>
+                <input asp-for="StoreCountry" class="form-control" id="StoreCountry" />
+                <span asp-validation-for="StoreCountry" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StorePhoneNumber" class="control-label"></label>
+                <input asp-for="StorePhoneNumber" class="form-control" />
+                <span asp-validation-for="StorePhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoreWhatsAppNumber" class="control-label"></label>
+                <input asp-for="StoreWhatsAppNumber" class="form-control" />
+                <span asp-validation-for="StoreWhatsAppNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoreLocation" class="control-label"></label>
+                <input asp-for="StoreLocation" class="form-control" />
+                <span asp-validation-for="StoreLocation" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="StoreGoogleMapsLink" class="control-label"></label>
+                <input asp-for="StoreGoogleMapsLink" class="form-control" />
+                <span asp-validation-for="StoreGoogleMapsLink" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function fetchAddress() {
+            const pincode = document.getElementById("StorePincode").value;
+            if (!pincode) return;
+
+            fetch(`https://api.postalpincode.in/pincode/${pincode}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data[0].PostOffice && data[0].PostOffice.length > 0) {
+                        const postOffice = data[0].PostOffice[0];
+                        document.getElementById("StoreCity").value = postOffice.District;
+                        document.getElementById("StoreState").value = postOffice.State;
+                        document.getElementById("StoreCountry").value = postOffice.Country;
+                    } else {
+                        alert("Invalid Pincode or no data found.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching address:", error);
+                    alert("Something went wrong while fetching address.");
+                });
+        }
+    </script>
+}
